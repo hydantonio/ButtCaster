@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>ButtCaster — Control</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="theme-dark">
+<div class="app">
+  <aside class="left">
+    <div class="brand"><span class="dot"></span> <strong>BUTTCASTER</strong><div class="sub">Stream everywhere, vibrate anything</div></div>
+    <nav>
+      <button class="navbtn" id="btnDevices"><img src="/icons/devices.svg"> Devices</button>
+      <button class="navbtn" id="btnOverlay"><img src="/icons/webcam.svg"> Overlay</button>
+      <button class="navbtn" id="btnPatterns"><img src="/icons/wave.svg"> Patterns</button>
+      <button class="navbtn" id="btnMappings"><img src="/icons/mapping.svg"> Mappings</button>
+      <button class="navbtn" id="btnSettings"><img src="/icons/settings.svg"> Settings</button>
+    </nav>
+    <div class="statusline" id="statusBox">Intiface: disconnected</div>
+    <label class="switch"><input id="themeToggle" type="checkbox" checked><span></span> Dark Theme</label>
+  </aside>
+
+  <main class="main">
+    <!-- DEVICES -->
+    <section id="pageDevices" class="page">
+      <div class="pagehead">
+        <input id="ifHost" class="input" placeholder="127.0.0.1" value="127.0.0.1">
+        <input id="ifPort" class="input" placeholder="12345" value="12345">
+        <button class="btn" id="btnConnectIF">Connect Intiface</button>
+      </div>
+      <div class="grid" id="devGrid"></div>
+    </section>
+
+    <!-- OVERLAY -->
+    <section id="pageOverlay" class="page active">
+      <div class="pagehead">
+        <button class="btn" id="btnOpenOverlay">Open Overlay Window</button>
+        <button class="btn secondary" id="btnOpenBrowser">Open in browser</button>
+      </div>
+      <div class="toolbar">
+        <button class="btn small" id="addText"><img src="/icons/plus.svg" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px">Text</button>
+        <button class="btn small" id="addBadge">Badge</button>
+        <button class="btn small" id="addTimer">Timer</button>
+        <button class="btn small" id="addCounter">Counter</button>
+        <button class="btn small" id="addImage">Image</button>
+        <button class="btn small secondary" id="clearAll">Clear</button>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage" id="stage">
+          <div class="gridbg"></div>
+        </div>
+        <div class="props">
+          <label>Snap(px) <input id="snapPx" class="input" style="width:80px" value="12"></label>
+          <label>Font size <input id="fontSize" class="input" style="width:80px" value="48"></label>
+          <button class="btn small" id="saveOverlay">Save overlay</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PATTERNS -->
+    <section id="pagePatterns" class="page">
+      <div class="pagehead"><button class="btn secondary" id="btnStopAll">Stop all</button></div>
+      <div class="patterns" id="patternGrid"></div>
+    </section>
+
+    <!-- MAPPINGS -->
+    <section id="pageMappings" class="page">
+      <div class="pagehead"><button class="btn" id="btnAddMap">Add Mapping</button></div>
+      <div id="mapList" class="maps"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="pageSettings" class="page">
+      <div class="settingsgrid">
+        <div class="card">
+          <h3>Appearance</h3>
+          <div class="kv"><label>Theme</label><select id="selTheme" class="input"><option value="light">Light</option><option value="dark" selected>Dark</option></select></div>
+        </div>
+        <div class="card">
+          <h3>Intiface</h3>
+          <div class="kv"><label>URL</label><input id="ifUrl" class="input" placeholder="ws://127.0.0.1:12345"></div>
+          <button class="btn" id="saveIF">Save</button>
+        </div>
+        <div class="card">
+          <h3>Chaturbate</h3>
+          <div class="kv"><label>Feed Type</label>
+            <select id="cbType" class="input"><option value="longpoll">longpoll</option><option value="ws">ws</option></select>
+          </div>
+          <div class="kv"><label>Events URL</label><input id="cbUrl" class="input" placeholder="https://..."></div>
+          <div class="kv"><label>Token</label><input id="cbToken" class="input" placeholder="API token"></div>
+          <div class="kv"><label>Room</label><input id="cbRoom" class="input" placeholder="room name"></div>
+          <button class="btn" id="saveCB">Save</button>
+        </div>
+        <div class="card">
+          <h3>Persistence</h3>
+          <button class="btn" id="saveAll"><img src="/icons/save.svg" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px">Save All</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+  <script src="/js/app.js"></script>
+</body>
+</html>
