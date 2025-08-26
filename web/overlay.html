@@ -1,0 +1,75 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ButtCaster — Overlay</title>
+<style>
+html,body{margin:0;padding:0;background:transparent;overflow:hidden}
+#root{position:relative;width:1920px;height:1080px;background:transparent}
+.el{position:absolute;color:#fff;font-family:Inter, system-ui, Arial}
+.badge{padding:8px 12px;border-radius:12px;background:rgba(0,0,0,.35);backdrop-filter: blur(6px)}
+.progress{ position:absolute; width:600px; height:28px; border-radius:16px; background:rgba(255,255,255,.1); overflow:hidden; box-shadow: inset 0 0 0 2px rgba(255,255,255,.12) }
+.fill{ height:100%; background: linear-gradient(90deg, #8a5bff, #ff4fd8); width:0% }
+.timer{ position:absolute; font:700 48px/1.1 Inter, system-ui, Arial; color:#fff; text-shadow: 0 2px 10px rgba(0,0,0,.5) }
+.topper{ position:absolute; padding:8px 12px; border-radius:12px; background:rgba(0,0,0,.35); color:#fff }
+.confetti{ position:absolute; left:0; top:0; right:0; bottom:0; pointer-events:none }
+.particle{ position:absolute; width:8px; height:8px; background:#fff; border-radius:50%; opacity:.9; mix-blend-mode:screen }
+</style>
+<script src="/socket.io/socket.io.js"></script>
+</head><body><div id="root"></div>
+<script>
+const socket = io();
+let overlay={elements:[]}, stats={topSupporter:null, topAmount:0, goal:{mode:'goal',goalAmount:100,current:0,timer:0}};
+
+function el(tag, cls){ const n=document.createElement(tag); if(cls) n.className=cls; return n; }
+function findOrCreate(id, mk){ let n=document.getElementById(id); if(!n){ n=mk(); n.id=id; root.appendChild(n); } return n; }
+
+function renderCustom(){
+  const rootEl = document.getElementById('root');
+  // remove all custom (keep widgets)
+  [...rootEl.querySelectorAll('._custom')].forEach(n=>n.remove());
+  (overlay.elements||[]).forEach(e=>{
+    const n = el('div', 'el _custom '+(e.type==='badge'?'badge':'text'));
+    n.style.left=e.x+'px'; n.style.top=e.y+'px'; n.style.fontSize=(e.fontSize||48)+'px';
+    n.textContent=e.text||e.type; rootEl.appendChild(n);
+  });
+}
+
+function renderWidgets(){
+  const rootEl = document.getElementById('root');
+  // Counter bar
+  const p = findOrCreate('_counter', ()=>{ const d=el('div','progress'); d.appendChild(el('div','fill')); return d; });
+  p.style.left='80px'; p.style.top='80px';
+  const percent = Math.max(0, Math.min(100, ((stats.goal.current||0)/(stats.goal.goalAmount||100))*100 ));
+  p.querySelector('.fill').style.width = percent + '%';
+
+  // Timer
+  const t = findOrCreate('_timer', ()=> el('div','timer'));
+  t.style.left='80px'; t.style.top='130px';
+  const secs = Math.max(0, stats.goal.timer||0); const mm = String(Math.floor(secs/60)).padStart(2,'0'); const ss = String(secs%60).padStart(2,'0');
+  t.textContent = `${mm}:${ss}`;
+
+  // Top supporter
+  const b = findOrCreate('_top', ()=> el('div','topper'));
+  b.style.left='80px'; b.style.top='180px';
+  b.textContent = stats.topSupporter ? `Top: ${stats.topSupporter} (${stats.topAmount})` : 'Top: —';
+}
+
+function confetti(){
+  const c = findOrCreate('_confetti', ()=>{ const d=el('div','confetti'); return d; });
+  for(let i=0;i<80;i++){
+    const p=el('div','particle'); p.style.left=Math.random()*1920+'px'; p.style.top='-10px';
+    p.style.background = `hsl(${Math.random()*360},90%,60%)`;
+    c.appendChild(p);
+    const dur = 1000 + Math.random()*1200;
+    const end = 1080 + Math.random()*100;
+    const drift = (Math.random()*2-1)*200;
+    p.animate([{transform:'translate(0,0)'}, {transform:`translate(${drift}px, ${end}px)`}], {duration:dur, easing:'cubic-bezier(.3,.7,.2,1)'}).onfinish = ()=> p.remove();
+  }
+}
+
+function render(){ renderCustom(); renderWidgets(); }
+
+socket.on('overlay:update', o=>{ overlay=o||{elements:[]}; render(); });
+socket.on('stats:update', s=>{ stats=s||stats; render(); });
+socket.on('overlay:effect', e=>{ if(e.kind==='tip'){ confetti(); } });
+</script>
+</body></html>
