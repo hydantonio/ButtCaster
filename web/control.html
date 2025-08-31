@@ -26,8 +26,7 @@
       <div class="chip"><span class="ico">💰</span>Tippers(10m): <span id="tippers">0</span></div>
       <button id="openOverlay" style="margin-left:auto"><span class="ico">📺</span>Open Overlay</button>
     </div>
-
-    <div class="canvas">
+     <div class="canvas">
       <div class="stage-wrap">
         <div id="stage" class="stage">
           <div class="grid"></div>
@@ -47,6 +46,7 @@
           <label><input type="checkbox" id="wmChk" checked> Watermark</label>
           <label><input type="checkbox" id="glowChk" checked> Pink/Blue lights</label>
           <button id="save">Save</button>
+          <button id="openOverlay"><span class="ico">📺</span>Open Overlay</button>
         </div>
         <div class="toolbar">
           <button id="addText"><span class="ico">📝</span>Add Text</button>
@@ -200,7 +200,6 @@ document.getElementById('btnConn').onclick=()=> socket.emit('intiface:connect', 
 socket.on('overlay:settings', s=>{ settings={...settings,...s}; document.getElementById('wmChk').checked=!!settings.showWatermark; document.getElementById('glowChk').checked=!!settings.glow; document.getElementById('goal').value=settings.goalTarget||2000; render(); });
 socket.on('overlay:elements', list=>{ elements=list||[]; render(); });
 socket.on('overlay:goal', g=>{ settings.goalValue=g.current; settings.goalTarget=g.target; render(); });
-socket.on('intiface:status', s=> document.getElementById('st').textContent = s.status );
 socket.on('intiface:devices', list=>{
   const UL = document.getElementById('devList'); UL.innerHTML='';
   (list||[]).forEach(d=>{
@@ -211,7 +210,6 @@ socket.on('intiface:devices', list=>{
     UL.appendChild(li);
   });
 });
-socket.on('counters', c=>{ document.getElementById('users').textContent=c.users||0; document.getElementById('tippers').textContent=c.tippers10m||0; });
 // bootstrap
 socket.emit('elements:get');
 </script>
