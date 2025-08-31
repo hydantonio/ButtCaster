@@ -13,6 +13,7 @@
 - Avvia Intiface Central → Start Scanning.
 - In *Devices* → URL `ws://127.0.0.1:12345` → **Connect**.
 - Slider/Pulse per testare i device. Mapping tip → vibrazione in **Mappings**.
+- Il server ora seleziona automaticamente il connettore Buttplug più compatibile (Node, legacy o browser) evitando l'errore "is not a constructor".
 
 ## Note
 - Server Node **CommonJS** con **buttplug** caricato **on-demand** (l’app parte anche senza).

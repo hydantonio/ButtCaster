@@ -31,21 +31,49 @@ function save(){ fs.writeFileSync(dataFile, JSON.stringify(data,null,2)); }
 
 // Intiface lazy
 let bp=null, bpConnected=false, Buttplug=null;
-function loadButtplug(){ if(Buttplug) return Buttplug; try { Buttplug=require('buttplug'); return Buttplug; } catch(e){ return null; } }
+function loadButtplug(){
+  if(Buttplug) return Buttplug;
+  try{ Buttplug=require('buttplug'); return Buttplug; }
+  catch(e){ return null; }
+}
+function getConnector(mod){
+  return (
+    mod.ButtplugNodeWebsocketClientConnector ||
+    mod.ButtplugClientWebsocketConnector ||
+    mod.ButtplugBrowserWebsocketClientConnector
+  );
+}
+function deviceList(){ return bp?.devices || bp?.Devices || []; }
 async function connectIntiface(url){
-  const mod = loadButtplug(); if(!mod){ io.emit('toast',{type:'error',text:'Buttplug not installed'}); return; }
-  const { ButtplugClient, ButtplugClientWebsocketConnector } = mod;
+  const mod = loadButtplug();
+  if(!mod){ io.emit('toast',{type:'error',text:'Buttplug not installed'}); return; }
+  const { ButtplugClient } = mod;
+  const Connector = getConnector(mod);
+  if(!Connector){ io.emit('toast',{type:'error',text:'No compatible Buttplug connector found'}); return; }
   try{
-    bp = new ButtplugClient('ButtCaster'); const conn = new ButtplugClientWebsocketConnector(url);
+    bp = new ButtplugClient('ButtCaster');
+    const conn = new Connector(url);
     await bp.connect(conn); bpConnected=true;
     data.intiface={url,status:'connected'}; save(); io.emit('intiface:status', data.intiface);
-    try{ await bp.startScanning(); } catch(_){}
+    try{ await bp.startScanning(); } catch(_){ }
     bp.on('deviceadded', ()=> io.emit('intiface:devices', devicesCaps()));
     bp.on('deviceremoved', ()=> io.emit('intiface:devices', devicesCaps()));
     io.emit('intiface:devices', devicesCaps());
-  }catch(err){ io.emit('intiface:status',{url,status:'error'}); io.emit('toast',{type:'error',text:String(err.message||err)}); }
+  }catch(err){
+    io.emit('intiface:status',{url,status:'error'});
+    io.emit('toast',{type:'error',text:String(err.message||err)});
+  }
 }
-function devicesCaps(){ if(!bp) return []; return bp.devices.map(d=>({id:d.index,name:d.name,canVibrate:!!d.vibrate,canRotate:!!d.rotate,canLinear:!!d.linear})); }
+function devicesCaps(){
+  const list = deviceList();
+  return list.map(d=>({
+    id: d.index ?? d.Index,
+    name: d.name ?? d.Name,
+    canVibrate: !!(d.vibrate || d.AllowedMessages?.VibrateCmd),
+    canRotate: !!(d.rotate || d.AllowedMessages?.RotateCmd),
+    canLinear: !!(d.linear || d.AllowedMessages?.LinearCmd)
+  }));
+}
 
 const presets = { gentle:{curve:'easeOutSine', max:.45, burstMs:1100}, balanced:{curve:'easeOutQuad', max:.7, burstMs:1400}, intense:{curve:'easeOutCubic', max:1, burstMs:1800} };
 const curves={ easeOutSine:x=>Math.sin((x*Math.PI)/2), easeOutQuad:x=>1-(1-x)*(1-x), easeOutCubic:x=>1-Math.pow(1-x,3) };
@@ -56,7 +84,7 @@ async function hapticsByAmount(amount){
   const norm = Math.max(0, Math.min(1, amount/(data.overlay.goalTarget||1000)));
   const intensity = curves[pr.curve](norm)*pr.max;
   const dur = pr.burstMs;
-  for(const dev of bp.devices){
+  for(const dev of deviceList()){
     try{
       if(dev.vibrate){ await dev.vibrate(intensity); setTimeout(()=>dev.vibrate(0).catch(()=>{}), dur); }
       else if(dev.linear){ await dev.linear(intensity, dur); }
@@ -87,7 +115,7 @@ io.on('connection',(socket)=>{
   socket.on('intiface:connect', (url)=> connectIntiface(url));
   socket.on('haptics:preset', p=>{ if(presets[p]){ data.hapticsPreset=p; save(); } });
   socket.on('haptics:device:set', async ({id,strength=0,dur=800})=>{
-    if(!bp) return; const d = bp.devices.find(x=>x.index===id); if(!d) return;
+    if(!bp) return; const d = deviceList().find(x=>(x.index ?? x.Index)===id); if(!d) return;
     try{ if(d.vibrate){ await d.vibrate(strength); setTimeout(()=>d.vibrate(0).catch(()=>{}), dur); } }catch(_){}
   });
 
