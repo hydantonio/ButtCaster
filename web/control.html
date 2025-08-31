@@ -187,7 +187,7 @@ function openProps(){
   P('p_h').oninput=e=>{ el.h=Number(e.target.value)||el.h; socket.emit('element:update',el); render(); };
 }
 // toolbar and controls
-document.getElementById('openOverlay').onclick=()=> window.open('/overlay.html?v=48','_blank');
+document.getElementById('openOverlay').onclick=()=> window.open('/overlay.html?v=53','_blank');
 document.getElementById('addText').onclick=()=> socket.emit('element:add',{id:String(Date.now()),type:'text',text:'WELCOME TO THE STREAM',x:360,y:320,size:64,w:800,h:72});
 document.getElementById('addGoal').onclick=()=>{ if(!elements.find(e=>e.type==='goalbar')) socket.emit('element:add',{id:String(Date.now()),type:'goalbar',x:280,y:120,w:960,h:100}); };
 document.getElementById('addImage').onclick=()=> socket.emit('element:add',{id:String(Date.now()),type:'image',x:80,y:380,w:200,h:140});
