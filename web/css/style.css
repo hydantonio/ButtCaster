@@ -9,6 +9,9 @@
 .navbtn.active{ outline:2px solid #bcd8ff }
 .center{ display:flex; flex-direction:column; min-height:100vh }
 #view-overlay{ flex:1; display:flex; flex-direction:column; overflow:auto }
+.center{ display:flex; flex-direction:column }
+.top{ display:flex; align-items:center; gap:10px; padding:12px 16px }
+.chip{ background:#fff; padding:8px 12px; border-radius:999px; font-weight:800; box-shadow: var(--accent-shadow); display:flex; align-items:center; gap:6px }
 .canvas{ padding:16px } 
 .stage-wrap{ width:960px; margin:0 auto; }
 .stage{ background:#fff; border-radius:20px; margin:0 auto; width:960px; height:540px; position:relative; box-shadow:0 12px 40px rgba(20,30,50,.12); overflow:hidden; }
@@ -30,5 +33,6 @@
 .prop input,.prop select{ width:100%; padding:10px 12px; border:1px solid #e6e9f2; border-radius:10px; font:600 14px Calibri,"Segoe UI" }
 .row{ display:flex; gap:10px; flex-wrap:wrap }
 .toolbar{ display:flex; gap:10px; padding:12px; justify-content:center; position:sticky; bottom:0; z-index:10; background:var(--bg); margin-top:auto }
+.toolbar{ display:flex; gap:10px; padding:12px; justify-content:center; position:sticky; bottom:0; z-index:10; background:var(--bg) }
 button{ cursor:pointer; border:1px solid #e6e9f2; border-radius:12px; padding:10px 12px; background:#fff; box-shadow:var(--accent-shadow); font-weight:800; display:flex; align-items:center; gap:6px }
 .ico{display:inline-flex; align-items:center}
