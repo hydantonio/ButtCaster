@@ -12,19 +12,19 @@
 <div class="app">
   <div class="sidebar">
     <div class="logo"><img src="/img/logo.svg" height="28"><div style="font-weight:800">ButtCaster</div></div>
-    <div class="navbtn active" data-section="overlay">Overlay</div>
-    <div class="navbtn" data-section="elements">Elements</div>
-    <div class="navbtn" data-section="mappings">Mappings</div>
-    <div class="navbtn" data-section="devices">Devices</div>
-    <div class="navbtn" data-section="settings">Settings</div>
+    <div class="navbtn active" data-section="overlay"><img src="/img/icons/overlay.svg" alt=""><span>Overlay</span></div>
+    <div class="navbtn" data-section="elements"><img src="/img/icons/elements.svg" alt=""><span>Elements</span></div>
+    <div class="navbtn" data-section="mappings"><img src="/img/icons/mappings.svg" alt=""><span>Mappings</span></div>
+    <div class="navbtn" data-section="devices"><img src="/img/icons/devices.svg" alt=""><span>Devices</span></div>
+    <div class="navbtn" data-section="settings"><img src="/img/icons/settings.svg" alt=""><span>Settings</span></div>
   </div>
 
   <div class="center">
     <div class="top">
-      <div class="chip">Intiface: <span id="st">disconnected</span></div>
-      <div class="chip">Users: <span id="users">0</span></div>
-      <div class="chip">Tippers(10m): <span id="tippers">0</span></div>
-      <button id="openOverlay" style="margin-left:auto">Open Overlay</button>
+      <div class="chip"><span class="ico">🔌</span>Intiface: <span id="st">disconnected</span></div>
+      <div class="chip"><span class="ico">👥</span>Users: <span id="users">0</span></div>
+      <div class="chip"><span class="ico">💰</span>Tippers(10m): <span id="tippers">0</span></div>
+      <button id="openOverlay" style="margin-left:auto"><span class="ico">📺</span>Open Overlay</button>
     </div>
 
     <div class="canvas">
@@ -49,10 +49,10 @@
           <button id="save">Save</button>
         </div>
         <div class="toolbar">
-          <button id="addText">Add Text</button>
-          <button id="addGoal">Add Tip Goal</button>
-          <button id="addImage">Add Image</button>
-          <button id="emit">Emit Tip 100</button>
+          <button id="addText"><span class="ico">📝</span>Add Text</button>
+          <button id="addGoal"><span class="ico">🎯</span>Add Tip Goal</button>
+          <button id="addImage"><span class="ico">🖼️</span>Add Image</button>
+          <button id="emit"><span class="ico">💥</span>Emit Tip 100</button>
         </div>
       </div>
 
@@ -72,8 +72,8 @@
               <label style="flex:1">Height<input id="p_h" type="number"></label>
             </div>
             <div class="row">
-              <button id="front">Front</button><button id="back">Back</button>
-              <button id="dup">Duplicate</button><button id="del">Delete</button>
+              <button id="front"><span class="ico">⬆️</span>Front</button><button id="back"><span class="ico">⬇️</span>Back</button>
+              <button id="dup"><span class="ico">📄</span>Duplicate</button><button id="del"><span class="ico">🗑️</span>Delete</button>
             </div>
           </div>
         </div>
@@ -82,7 +82,7 @@
       <div id="view-mappings" class="view section" hidden>
         <div><strong>Mappings (token → intensity/duration)</strong></div>
         <div id="maps"></div>
-        <button id="addRange">Add Range</button>
+        <button id="addRange"><span class="ico">➕</span>Add Range</button>
       </div>
 
       <div id="view-devices" class="view section" hidden>
@@ -96,8 +96,8 @@
       <div id="view-settings" class="view section" hidden>
         <div class="row">
           <label>Haptics Preset<br><select id="preset"><option value="gentle">Gentle</option><option value="balanced" selected>Balanced</option><option value="intense">Intense</option></select></label>
-          <button id="goalR">Goal Reached</button>
-          <button id="quit">Quit</button>
+          <button id="goalR"><span class="ico">🏁</span>Goal Reached</button>
+          <button id="quit"><span class="ico">❌</span>Quit</button>
         </div>
       </div>
     </div>
