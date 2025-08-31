@@ -23,7 +23,14 @@ app.get('/api/devices', (req,res)=> res.json({ ok:true, devices: state.devices, 
 app.post('/api/emit-tip', async (req,res)=>{ const amt = Number((req.body&&req.body.amount)||50); state.overlay.goalProgress = Math.min(state.overlay.goalTarget, state.overlay.goalProgress + amt); io.emit('overlay:goal',{ target: state.overlay.goalTarget, current: state.overlay.goalProgress }); await vibrateAll(state, Math.min(1, Math.max(.25, amt/250)), 1200); res.json({ ok:true }); });
 app.post('/api/overlay', (req,res)=>{ Object.assign(state.overlay, req.body||{}); io.emit('overlay:update', state.overlay); res.json({ok:true}); });
 
-io.on('connection', (socket)=>{ socket.emit('init', { overlay: state.overlay, devices: state.devices, intiface: state.intiface }); socket.on('overlay:set', (ov)=>{ Object.assign(state.overlay, ov||{}); io.emit('overlay:update', state.overlay); }); });
+io.on('connection', (socket)=>{
+  socket.emit('init', { overlay: state.overlay, devices: state.devices, intiface: state.intiface });
+  socket.on('overlay:set', (ov)=>{ Object.assign(state.overlay, ov||{}); io.emit('overlay:update', state.overlay); });
+  socket.on('elements:get', ()=> socket.emit('overlay:elements', state.overlay.elements));
+  socket.on('element:add', (el)=>{ if(!el) return; const i = state.overlay.elements.findIndex(e=>e.id===el.id); if(i>=0) state.overlay.elements[i]=el; else state.overlay.elements.push(el); io.emit('overlay:elements', state.overlay.elements); });
+  socket.on('element:update', (el)=>{ if(!el||el.id==null) return; const i = state.overlay.elements.findIndex(e=>e.id===el.id); if(i>=0) Object.assign(state.overlay.elements[i], el); else state.overlay.elements.push(el); io.emit('overlay:elements', state.overlay.elements); });
+  socket.on('element:delete', (id)=>{ const elId = typeof id==='object'? id.id:id; const i = state.overlay.elements.findIndex(e=>e.id===elId); if(i>=0){ state.overlay.elements.splice(i,1); io.emit('overlay:elements', state.overlay.elements); } });
+});
 
 app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../public/control.html')));
 
