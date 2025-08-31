@@ -17,15 +17,9 @@
     <div class="navbtn" data-section="mappings"><img src="/img/icons/mappings.svg" alt=""><span>Mappings</span></div>
     <div class="navbtn" data-section="devices"><img src="/img/icons/devices.svg" alt=""><span>Devices</span></div>
     <div class="navbtn" data-section="settings"><img src="/img/icons/settings.svg" alt=""><span>Settings</span></div>
+    <button id="quit" class="quit"><span class="ico">❌</span>Quit</button>
   </div>
-
   <div class="center">
-    <div class="top">
-      <div class="chip"><span class="ico">🔌</span>Intiface: <span id="st">disconnected</span></div>
-      <div class="chip"><span class="ico">👥</span>Users: <span id="users">0</span></div>
-      <div class="chip"><span class="ico">💰</span>Tippers(10m): <span id="tippers">0</span></div>
-      <button id="openOverlay" style="margin-left:auto"><span class="ico">📺</span>Open Overlay</button>
-    </div>
      <div class="canvas">
       <div class="stage-wrap">
         <div id="stage" class="stage">
@@ -97,7 +91,6 @@
         <div class="row">
           <label>Haptics Preset<br><select id="preset"><option value="gentle">Gentle</option><option value="balanced" selected>Balanced</option><option value="intense">Intense</option></select></label>
           <button id="goalR"><span class="ico">🏁</span>Goal Reached</button>
-          <button id="quit"><span class="ico">❌</span>Quit</button>
         </div>
       </div>
     </div>
