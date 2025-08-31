@@ -1,0 +1,5 @@
+
+html, body { background: transparent !important; }
+body { margin:0; overflow:hidden; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: Calibri, Arial, sans-serif }
+.stage{background:transparent !important; box-shadow:none !important; width:1920px; height:1080px}
+.grid{display:none !important}

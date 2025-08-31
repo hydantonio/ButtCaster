@@ -1,0 +1,8 @@
+
+:root{ --brand-grad: linear-gradient(90deg,#ff6ec7, #6ea8ff); --ink:#0a0d14; --bg:#f6f8fc; --br:#e6e9f2; }
+.header-brand{position:sticky;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(15,18,32,.6);backdrop-filter: blur(8px); z-index:9999; border-bottom:1px solid rgba(255,255,255,.06)}
+.header-brand img{height:28px;width:auto;display:block}
+.header-title{font:600 13px/1.2 Calibri,Inter,Segoe UI,Arial;letter-spacing:.3px;color:#cdd7ff;}
+.badges{margin-left:auto; display:flex; gap:8px}
+.badges .chip{font:600 12px/26px Calibri,Inter,Segoe UI,Arial; padding:0 10px; color:#111; background:var(--brand-grad); border-radius:999px; box-shadow:0 6px 18px rgba(110,168,255,.25)}
+.fade-enter{opacity:0; transform:translateY(-6px)} .fade-enter-active{opacity:1; transform:none; transition:.15s cubic-bezier(.2,.7,.3,1)}
