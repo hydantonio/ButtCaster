@@ -1,6 +1,6 @@
 {
-  "name": "ButtCaster",
-  "version": "0.0.48",
+  "name": "buttcaster-v48",
+  "version": "48.0.0",
   "type": "commonjs",
   "private": true,
   "main": "app/main.js",
@@ -11,7 +11,7 @@
   "dependencies": {
     "express": "^4.19.2",
     "socket.io": "^4.7.5",
-    "buttplug": "^3.0.0",
+    "buttplug": "^3.0.0"
   },
   "devDependencies": {
     "electron": "^30.0.8"

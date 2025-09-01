@@ -1,6 +1,6 @@
 
 // web/js/intiface.js (same as previous zip)
-import * as Buttplug from "buttplug";
+import * as Buttplug from "../lib/buttplug.min.mjs";
 let client = null;
 let deviceCountCb = null;
 export async function connectIntiface(address = "ws://127.0.0.1:12345") {

@@ -1,4 +1,5 @@
 // server/intiface.js — v53 (CJS)
+// in cima a web/js/intiface.js
 const pkg = require('buttplug');
 const NodeConnector =
   pkg.ButtplugNodeWebsocketClientConnector ||
