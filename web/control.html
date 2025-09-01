@@ -30,11 +30,12 @@
         <div id="stage" class="stage">
           <div class="grid"></div>
           <div class="glow" id="stageGlow"></div>
-          <div class="canvas-abs" id="canvas"></div>
-          <div id="sel" class="sel">
-            <div class="h nw"></div><div class="h n"></div><div class="h ne"></div>
-            <div class="h w"></div><div class="h e"></div>
-            <div class="h sw"></div><div class="h s"></div><div class="h se"></div>
+          <div class="canvas-abs" id="canvas">
+            <div id="sel" class="sel">
+              <div class="h nw"></div><div class="h n"></div><div class="h ne"></div>
+              <div class="h w"></div><div class="h e"></div>
+              <div class="h sw"></div><div class="h s"></div><div class="h se"></div>
+            </div>
           </div>
           <img class="watermark" src="/img/watermark.svg" id="wm">
         </div>
@@ -134,6 +135,7 @@ function render(){
     canvas.appendChild(node);
     const li=document.createElement('li'); li.textContent=`${el.type} — ${el.id}`; li.onclick=()=>select(el.id); document.getElementById('layers').appendChild(li);
   });
+  canvas.appendChild(sel);
   wm.style.display = settings.showWatermark?'block':'none'; glow.style.display = settings.glow?'block':'none';
   if(selected){ showSel(); } else sel.style.display='none';
   wire();
@@ -194,7 +196,10 @@ document.getElementById('save').onclick=()=>{ socket.emit('settings:update',{ sh
 document.getElementById('emit').onclick=()=> socket.emit('tip', { amount:100, user:'Tester' });
 document.getElementById('goalR').onclick=()=> socket.emit('overlay:goal-reached', {});
 document.getElementById('quit').onclick=()=> fetch('/app/quit').catch(()=>{});
-document.getElementById('btnConn').onclick=()=> socket.emit('intiface:connect', document.getElementById('ws').value);
+document.getElementById('btnConn').onclick=()=>{
+  const url=document.getElementById('ws').value;
+  fetch('/api/intiface/connect',{method:'POST', body:JSON.stringify({url})});
+};
 // sockets
 socket.on('overlay:settings', s=>{ settings={...settings,...s}; document.getElementById('wmChk').checked=!!settings.showWatermark; document.getElementById('glowChk').checked=!!settings.glow; document.getElementById('goal').value=settings.goalTarget||2000; render(); });
 socket.on('overlay:elements', list=>{ elements=list||[]; render(); });
