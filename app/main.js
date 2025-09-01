@@ -9,6 +9,7 @@ const nodeHttp = require('http');
 const fs = require('fs');
 
 const { spawn } = require('child_process');
+
 let server = null, win = null;
 
 function startServer(){
@@ -24,6 +25,23 @@ function startServer(){
     stdio:'ignore',
     windowsHide:true,
     env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }
+
+  });
+  server.on('exit', ()=> server=null);
+  server.on('error', err=>{ console.error('[ButtCaster] failed to start server', err); server=null; });
+}
+
+function waitForServer(url, cb){
+  const start = Date.now();
+  (function check(){
+    nodeHttp.get(url, ()=> cb(true)).on('error', ()=>{
+      if(Date.now() - start > 10000) return cb(false);
+      setTimeout(check, 200);
+    });
+  })();
+}
+
+
     windowsHide:true
 
 
@@ -60,6 +78,7 @@ function waitForServer(url, cb){
   })();
 }
 
+
 function createWindow(){
   const { width, height, x, y } = screen.getPrimaryDisplay().workArea;
   win = new BrowserWindow({ x, y, width, height, backgroundColor: '#00000000', autoHideMenuBar: true });
@@ -68,6 +87,7 @@ function createWindow(){
     if(ok) win.loadURL('http://localhost:3000/control.html');
     else win.webContents.executeJavaScript("document.querySelector('.tip').textContent='Server failed to start';");
   });
+
 
   waitForServer('http://localhost:3000/', ()=> win.loadURL('http://localhost:3000/control.html'));
   win = new BrowserWindow({ backgroundColor: '#00000000', autoHideMenuBar: true, fullscreen: true, minWidth: 1280, minHeight: 820 });
