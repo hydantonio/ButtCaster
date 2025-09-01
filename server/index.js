@@ -6,8 +6,18 @@ const path = require('path');
 const { connectIntiface, vibrateAll } = require('./intiface.js');
 
 const app = express();
-const server = http.createServer(app);
-const io = new SocketIO(server, { cors: { origin: '*' } });
+// Attach Express as the HTTP request handler so Socket.IO's internal
+// listener can run before Express processes a request. Creating the
+// server without a request listener and then attaching Express with
+// `server.on('request', app)` caused both listeners to fire for Socket.IO
+// requests, resulting in "Can't set headers after they are sent" errors
+// when Express attempted to handle Socket.IO's already‑served responses.
+// Using `http.createServer(app)` restores the typical Express + Socket.IO
+// integration where Socket.IO intercepts its own requests without
+// triggering Express.
+// Use a uniquely named variable to avoid accidental re‑declarations.
+const httpServer = http.createServer(app);
+const io = new SocketIO(httpServer, { cors: { origin: '*' } });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'../public')));
@@ -47,11 +57,13 @@ io.on('connection', (socket)=>{
     await connectIntiface(url ?? state.intiface.url, state, io);
     socket.emit('intiface:devices', state.devices);
     io.emit('intiface:status', state.intiface);
+  });
   socket.on('tip', async ({amount = 100}) => {
     await handleTip(amount);
   });
 });
 
-app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../public/control.html')));
+app.get('/', (req,res)=> res.sendFile(path.join(__dirname,'../web/control.html')));
 
-const PORT = process.env.PORT || 3000; server.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));

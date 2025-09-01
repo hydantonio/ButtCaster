@@ -10,8 +10,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const server = http.createServer(app);
-const io = new SocketIO(server, { cors: { origin: '*' } });
+// Use a uniquely named variable so the file can be imported alongside other
+// modules without colliding with a global `server` identifier.
+const httpServer = http.createServer(app);
+const io = new SocketIO(httpServer, { cors: { origin: '*' } });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'../public')));
@@ -68,4 +70,4 @@ io.on('connection', (socket)=>{
 app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../public/control.html')));
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
+httpServer.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
