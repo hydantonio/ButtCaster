@@ -6,6 +6,9 @@ const path = require('path');
 const { connectIntiface, vibrateAll } = require('./intiface.cjs');
 
 const app = express();
+// Use a unique name to avoid redeclarations across bundled modules.
+const httpServer = http.createServer(app);
+const io = new SocketIO(httpServer, { cors: { origin: '*' } });
 const server = http.createServer(app);
 const io = new SocketIO(server, { cors: { origin: '*' } });
 
@@ -35,4 +38,7 @@ io.on('connection', (socket)=>{
 
 app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../public/control.html')));
 
+
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
 const PORT = process.env.PORT || 3000; server.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
