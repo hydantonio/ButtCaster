@@ -118,7 +118,8 @@ const wm=document.getElementById('wm'), glow=document.getElementById('stageGlow'
 let settings={showWatermark:true, glow:true, goalTarget:2000, goalValue:0}; let elements=[]; let selected=null;
 
 // preview scale 960x540 ↔ 1920x1080
-function scale(){ const s=960/1920; document.querySelector('.canvas-abs').style.transform=`scale(${s})`; }
+let scaleFactor=960/1920;
+function scale(){ const s=Math.min(window.innerWidth/1920, window.innerHeight/1080); scaleFactor=s; document.querySelector('.canvas-abs').style.transform=`scale(${s})`; }
 scale(); addEventListener('resize', scale);
 
 // Render
@@ -150,7 +151,7 @@ function attachResize(h, el, k){
   h.onpointerdown=(e)=>{ h.setPointerCapture(e.pointerId);
     const start={x:e.clientX,y:e.clientY, ex:el.x, ey:el.y, ew:el.w||600, eh:el.h||60};
     function mv(ev){
-      const dx=(ev.clientX-start.x)/0.5, dy=(ev.clientY-start.y)/0.5;
+      const dx=(ev.clientX-start.x)/scaleFactor, dy=(ev.clientY-start.y)/scaleFactor;
       let x=el.x, y=el.y, w=el.w||600, h=el.h||60;
       if(k.includes('e')) w=Math.max(20, Math.round(start.ew+dx));
       if(k.includes('s')) h=Math.max(20, Math.round(start.eh+dy));
@@ -167,8 +168,8 @@ function wire(){
     node.onclick=()=>select(node.dataset.id);
     const el=elements.find(e=>e.id===node.dataset.id);
     node.onpointerdown=(e)=>{ if(e.button!==0) return; node.setPointerCapture(e.pointerId);
-      const s=0.5; const start={x:e.clientX,y:e.clientY, ex:el.x, ey:el.y};
-      node.onpointermove=(ev)=>{ const dx=(ev.clientX-start.x)/s, dy=(ev.clientY-start.y)/s; el.x=Math.round(start.ex+dx); el.y=Math.round(start.ey+dy); socket.emit('element:update',el); showSel(); };
+      const start={x:e.clientX,y:e.clientY, ex:el.x, ey:el.y};
+      node.onpointermove=(ev)=>{ const dx=(ev.clientX-start.x)/scaleFactor, dy=(ev.clientY-start.y)/scaleFactor; el.x=Math.round(start.ex+dx); el.y=Math.round(start.ey+dy); socket.emit('element:update',el); showSel(); };
       node.onpointerup=()=>{ node.onpointermove=null; };
     };
   });
@@ -189,16 +190,22 @@ function openProps(){
 }
 // toolbar and controls
 document.getElementById('openOverlay').onclick=()=> window.open('/overlay.html?v=48','_blank');
-document.getElementById('addText').onclick=()=> socket.emit('element:add',{id:String(Date.now()),type:'text',text:'WELCOME TO THE STREAM',x:360,y:320,size:64,w:800,h:72});
-document.getElementById('addGoal').onclick=()=>{ if(!elements.find(e=>e.type==='goalbar')) socket.emit('element:add',{id:String(Date.now()),type:'goalbar',x:280,y:120,w:960,h:100}); };
-document.getElementById('addImage').onclick=()=> socket.emit('element:add',{id:String(Date.now()),type:'image',x:80,y:380,w:200,h:140});
+socket.on('connect',()=>{
+  document.getElementById('addText').onclick=()=>{ console.log('addText emitted'); socket.emit('element:add',{id:String(Date.now()),type:'text',text:'WELCOME TO THE STREAM',x:360,y:320,size:64,w:800,h:72}); };
+  document.getElementById('addGoal').onclick=()=>{ console.log('addGoal emitted'); if(!elements.find(e=>e.type==='goalbar')) socket.emit('element:add',{id:String(Date.now()),type:'goalbar',x:280,y:120,w:960,h:100}); };
+  document.getElementById('addImage').onclick=()=>{ console.log('addImage emitted'); socket.emit('element:add',{id:String(Date.now()),type:'image',x:80,y:380,w:200,h:140}); };
+});
 document.getElementById('save').onclick=()=>{ socket.emit('settings:update',{ showWatermark:document.getElementById('wmChk').checked, glow:document.getElementById('glowChk').checked }); socket.emit('goal:set', Number(document.getElementById('goal').value)||0 ); };
 document.getElementById('emit').onclick=()=> socket.emit('tip', { amount:100, user:'Tester' });
 document.getElementById('goalR').onclick=()=> socket.emit('overlay:goal-reached', {});
 document.getElementById('quit').onclick=()=> fetch('/app/quit').catch(()=>{});
 document.getElementById('btnConn').onclick=()=>{
   const url=document.getElementById('ws').value;
-  fetch('/api/intiface/connect',{method:'POST', body:JSON.stringify({url})});
+  fetch('/api/intiface/connect', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url })
+  });
 };
 // sockets
 socket.on('overlay:settings', s=>{ settings={...settings,...s}; document.getElementById('wmChk').checked=!!settings.showWatermark; document.getElementById('glowChk').checked=!!settings.glow; document.getElementById('goal').value=settings.goalTarget||2000; render(); });
@@ -213,6 +220,9 @@ socket.on('intiface:devices', list=>{
     <button onclick="socket.emit('haptics:device:set',{id:${d.id}, strength:.85, dur:900})">Pulse</button>`;
     UL.appendChild(li);
   });
+});
+socket.on('intiface:status', s => {
+  document.getElementById('st').textContent = s.connected ? 'connected' : 'disconnected';
 });
 // bootstrap
 socket.emit('elements:get');
