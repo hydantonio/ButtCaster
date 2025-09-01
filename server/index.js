@@ -47,11 +47,12 @@ io.on('connection', (socket)=>{
     await connectIntiface(url ?? state.intiface.url, state, io);
     socket.emit('intiface:devices', state.devices);
     io.emit('intiface:status', state.intiface);
+  });
   socket.on('tip', async ({amount = 100}) => {
     await handleTip(amount);
   });
 });
 
-app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../public/control.html')));
+app.get('/', (req,res)=> res.sendFile(path.join(__dirname,'../web/control.html')));
 
 const PORT = process.env.PORT || 3000; server.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
