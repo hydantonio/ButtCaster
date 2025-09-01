@@ -47,6 +47,7 @@ io.on('connection', (socket)=>{
     await connectIntiface(url ?? state.intiface.url, state, io);
     socket.emit('intiface:devices', state.devices);
     io.emit('intiface:status', state.intiface);
+  });
   socket.on('tip', async ({amount = 100}) => {
     await handleTip(amount);
   });
