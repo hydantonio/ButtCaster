@@ -6,6 +6,7 @@ const path = require('path');
 const { connectIntiface, vibrateAll } = require('./intiface.js');
 
 const app = express();
+const server = http.createServer(app);
 const server = http.createServer();
 const io = new SocketIO(server, { cors: { origin: '*' } });
 server.on('request', app);
