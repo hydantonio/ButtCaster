@@ -30,6 +30,9 @@ function createWindow(){
   win = new BrowserWindow({ x, y, width, height, backgroundColor: '#00000000', autoHideMenuBar: true });
   win.loadFile(path.join(__dirname,'../web/splash.html'));
   waitForServer('http://localhost:3000/', ()=> win.loadURL('http://localhost:3000/control.html'));
+  win = new BrowserWindow({ backgroundColor: '#00000000', autoHideMenuBar: true, fullscreen: true, minWidth: 1280, minHeight: 820 });
+  win.loadURL('http://localhost:3000/splash.html').catch(()=>{});
+  setTimeout(()=> win.loadURL('http://localhost:3000/control.html'), 1500);
   win.on('closed', ()=>{ if(server) server.kill(); });
 }
 
