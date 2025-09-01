@@ -15,12 +15,18 @@ app.use(express.static(path.join(__dirname,'../web')));
 
 const state = { overlay:{ goalTarget:2000, goalProgress:0, glow:true, watermark:true, elements:[] }, devices:[], intiface:{ url:'ws://127.0.0.1:12345', connected:false }, bpClient:null };
 
+async function handleTip(amount = 100){
+  state.overlay.goalProgress = Math.min(state.overlay.goalTarget, state.overlay.goalProgress + amount);
+  io.emit('overlay:goal', { target: state.overlay.goalTarget, current: state.overlay.goalProgress });
+  await vibrateAll(state, Math.min(1, Math.max(.25, amount / 250)), 1200);
+}
+
 app.post('/api/intiface/connect', async (req,res)=>{
   try{ const url = (req.body&&req.body.url) || state.intiface.url; state.intiface.url = url; await connectIntiface(url, state, io); res.json({ ok:true, devices: state.devices }); }
   catch(e){ res.status(500).json({ ok:false, error: String(e) }); }
 });
 app.get('/api/devices', (req,res)=> res.json({ ok:true, devices: state.devices, connected: state.intiface.connected }));
-app.post('/api/emit-tip', async (req,res)=>{ const amt = Number((req.body&&req.body.amount)||50); state.overlay.goalProgress = Math.min(state.overlay.goalTarget, state.overlay.goalProgress + amt); io.emit('overlay:goal',{ target: state.overlay.goalTarget, current: state.overlay.goalProgress }); await vibrateAll(state, Math.min(1, Math.max(.25, amt/250)), 1200); res.json({ ok:true }); });
+app.post('/api/emit-tip', async (req,res)=>{ const amt = Number((req.body&&req.body.amount)||50); await handleTip(amt); res.json({ ok:true }); });
 app.post('/api/overlay', (req,res)=>{ Object.assign(state.overlay, req.body||{}); io.emit('overlay:update', state.overlay); res.json({ok:true}); });
 
 io.on('connection', (socket)=>{
@@ -41,6 +47,8 @@ io.on('connection', (socket)=>{
     await connectIntiface(url ?? state.intiface.url, state, io);
     socket.emit('intiface:devices', state.devices);
     io.emit('intiface:status', state.intiface);
+  socket.on('tip', async ({amount = 100}) => {
+    await handleTip(amount);
   });
 });
 
