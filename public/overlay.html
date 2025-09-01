@@ -1,0 +1,52 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ButtCaster Overlay</title>
+<link rel="stylesheet" href="/css/overlay.css"/>
+<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div id="root">
+    <div class="glow pink" id="glowPink"></div>
+    <div class="glow blue" id="glowBlue"></div>
+    <div id="elements"></div>
+    <img class="watermark" id="wm" src="/img/watermark.svg" width="160"/>
+    <div class="goal" id="goal"><div class="fill" id="goalFill"></div><div class="rem">Remaining: <b id="rem">0</b></div></div>
+  </div>
+  <script>
+    const s = io(); let overlay={ goalTarget:2000, goalProgress:0, glow:true, watermark:true }, elements=[];
+    function render(){
+      document.getElementById('glowPink').style.display = overlay.glow?'block':'none';
+      document.getElementById('glowBlue').style.display = overlay.glow?'block':'none';
+      document.getElementById('wm').style.display = overlay.watermark?'block':'none';
+      const pct = Math.max(0, Math.min(100, (overlay.goalProgress/overlay.goalTarget)*100));
+      document.getElementById('goalFill').style.width = pct+'%';
+      document.getElementById('rem').textContent = Math.max(0, overlay.goalTarget - overlay.goalProgress);
+      const c=document.getElementById('elements'); c.innerHTML='';
+      elements.forEach(el=>{
+        const node=document.createElement('div'); node.className='element';
+        node.style.left=el.x+'px'; node.style.top=el.y+'px';
+        node.style.width=(el.w||600)+'px'; node.style.height=(el.h||60)+'px';
+        if(el.type==='text'){
+          node.textContent=el.text||'';
+          node.style.fontSize=(el.size||48)+'px';
+          node.style.color=el.color||'#fff';
+        } else if(el.type==='image'){
+          const img=document.createElement('img'); img.src=el.src||''; img.style.maxWidth='100%'; img.style.maxHeight='100%'; node.appendChild(img);
+        } else if(el.type==='goalbar'){
+          const track=document.createElement('div'); track.className='goal'; track.style.position='absolute'; track.style.inset='0';
+          node.appendChild(track);
+        }
+        c.appendChild(node);
+      });
+    }
+    s.on('init', st=>{ overlay={...overlay, ...(st?.overlay||{})}; render(); });
+    s.on('overlay:update', ov=>{ overlay={...overlay, ...ov}; render(); });
+    s.on('overlay:goal', g=>{ overlay.goalTarget=g.target; overlay.goalProgress=g.current||g.progress||0; render(); });
+    s.on('overlay:elements', list=>{ elements=list||[]; render(); });
+    function fit(){ const sw=innerWidth, sh=innerHeight; const sc=Math.min(sw/1920, sh/1080); document.getElementById('root').style.transform='scale('+sc+')'; }
+    addEventListener('resize', fit); fit();
+    s.emit('elements:get');
+  </script>
+</body></html>

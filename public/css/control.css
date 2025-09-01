@@ -1,0 +1,22 @@
+/* control.css — v53 */
+:root{ --brand1:#ff7ad9; --brand2:#7eb5ff; --ink:#e8ecff; --bg:#0f1226; --card:#121a34; }
+html,body{margin:0;height:100%;background:linear-gradient(180deg,#0c1226,#12193a);color:var(--ink);font-family:Calibri,Inter,Segoe UI,Arial}
+.app{ display:grid; grid-template-columns: 240px 1fr 340px; min-height:100vh }
+.sidebar{ background:#0f1226; border-right:1px solid #1a2142; padding:12px }
+.nav .btn{ width:100%; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; color:#cbd5ff; border:1px solid #1c2344; background:#0f152e; cursor:pointer; margin-bottom:8px; transition:.14s }
+.nav .btn:hover{ background:#121b3a; transform:translateX(1px); box-shadow:0 10px 26px rgba(0,0,0,.25) }
+.nav .btn.active{ outline:2px solid #4b7bff55 }
+.nav .ico{ width:18px; height:18px; border-radius:4px; background:linear-gradient(135deg,var(--brand1),var(--brand2)); opacity:.85 }
+.center{ padding:16px }
+.stageWrap{ background:var(--card); border:1px solid #1b2344; border-radius:16px; padding:12px }
+.stage{ width:960px; height:540px; margin:0 auto; position:relative; border-radius:12px; overflow:hidden; background:transparent }
+.bottomBar{ display:flex; gap:10px; align-items:center; justify-content:center; margin-top:10px }
+.right{ background:#0f1226; border-left:1px solid #1a2142; padding:12px }
+.right .card{ background:var(--card); border:1px solid #1b2344; border-radius:12px; padding:12px }
+.dev-row{ display:flex; gap:8px; align-items:center; padding:8px 6px; border-bottom:1px dashed #273 }
+.dot{ width:10px; height:10px; border-radius:50% } .dot.ok{background:#66ffaa} .dot.no{background:#ff9aa5}
+.draggable{ position:absolute; user-select:none; cursor:move }
+.draggable.selected{ outline:1px dashed #7eb5ff }
+.goalbar{ position:absolute; width:560px }
+.goalbar .bar{ height:22px; border-radius:999px; overflow:hidden; background:#1a2244; border:1px solid #34406f }
+.goalbar .bar .fill{ height:100%; background:linear-gradient(90deg,var(--brand1),var(--brand2)); width:0%; transition:width .25s ease }

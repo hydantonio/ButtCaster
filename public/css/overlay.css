@@ -1,0 +1,12 @@
+/* overlay.css — v53 */
+html,body{ margin:0; height:100%; background:transparent }
+#root{ position:relative; width:1920px; height:1080px; transform-origin:0 0 }
+.element{ position:absolute; font:700 48px/1 Calibri,Inter,sans-serif; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.45); pointer-events:none }
+#elements{ position:absolute; inset:0; pointer-events:none }
+.glow{ position:absolute; pointer-events:none; filter:blur(90px); opacity:.45 }
+.glow.pink{ width:720px; height:360px; left:120px; top:80px; background:radial-gradient(50% 50%, rgba(255,122,217,.7) 0, rgba(255,122,217,0) 70%) }
+.glow.blue{ width:720px; height:360px; right:120px; top:140px; background:radial-gradient(50% 50%, rgba(119,168,255,.7) 0, rgba(119,168,255,0) 70%) }
+.watermark{ position:absolute; right:24px; bottom:20px; opacity:.28 }
+.goal{ position:absolute; left:50%; transform:translateX(-50%); bottom:64px; width:1120px; height:26px; border-radius:999px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35); overflow:hidden; backdrop-filter:blur(8px) }
+.goal .fill{ height:100%; width:0%; background:linear-gradient(90deg,#ff7ad9,#7eb5ff); transition:width .35s ease }
+.goal .rem{ position:absolute; top:-22px; left:0; font:700 12px/1 Calibri,Inter,sans-serif; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.45) }

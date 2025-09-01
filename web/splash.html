@@ -1,0 +1,17 @@
+
+<!doctype html><html><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ButtCaster — Launching…</title>
+<style>
+  html,body{height:100%; background:#fff; margin:0}
+  .wrap{position:fixed; inset:0; display:grid; place-items:center}
+  .card{padding:32px 44px; border-radius:20px; background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03)); box-shadow:0 30px 60px rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.07)}
+  .logo{display:block; width:min(520px,80vw)}
+  .bar{height:4px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden; margin-top:18px}
+  .bar::before{content:""; display:block; height:100%; width:40%; background:linear-gradient(90deg,#ff6ec7,#6ea8ff); border-radius:inherit; animation:load 1.6s ease-in-out infinite}
+  @keyframes load{50%{transform:translateX(150%)} 100%{transform:translateX(300%)}}
+  .tip{color:#aeb8ff; font:600 12px/1.6 Calibri,Inter,Segoe UI,Arial; text-align:center; opacity:.9; margin-top:10px}
+</style>
+</head><body>
+  <div class="wrap"><div class="card"><img class="logo" src="/img/logo.svg" alt="ButtCaster"/><div class="bar"></div><div class="tip">Launching Control…</div></div></div>
+</body></html>
