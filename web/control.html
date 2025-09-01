@@ -154,7 +154,6 @@ function attachResize(h, el, k){
     const start={x:e.clientX,y:e.clientY, ex:el.x, ey:el.y, ew:el.w||600, eh:el.h||60};
     function mv(ev){
       const dx=(ev.clientX-start.x)/0.5, dy=(ev.clientY-start.y)/0.5;
-      const dx=(ev.clientX-start.x)/scaleFactor, dy=(ev.clientY-start.y)/scaleFactor;
       let x=el.x, y=el.y, w=el.w||600, h=el.h||60;
       if(k.includes('e')) w=Math.max(20, Math.round(start.ew+dx));
       if(k.includes('s')) h=Math.max(20, Math.round(start.eh+dy));
@@ -173,7 +172,6 @@ function wire(){
     node.onpointerdown=(e)=>{ if(e.button!==0) return; node.setPointerCapture(e.pointerId);
       const s=0.5; const start={x:e.clientX,y:e.clientY, ex:el.x, ey:el.y};
       node.onpointermove=(ev)=>{ const dx=(ev.clientX-start.x)/s, dy=(ev.clientY-start.y)/s; el.x=Math.round(start.ex+dx); el.y=Math.round(start.ey+dy); socket.emit('element:update',el); showSel(); };
-      const start={x:e.clientX,y:e.clientY, ex:el.x, ey:el.y};
       node.onpointermove=(ev)=>{ const dx=(ev.clientX-start.x)/scaleFactor, dy=(ev.clientY-start.y)/scaleFactor; el.x=Math.round(start.ex+dx); el.y=Math.round(start.ey+dy); socket.emit('element:update',el); showSel(); };
       node.onpointerup=()=>{ node.onpointermove=null; };
     };
