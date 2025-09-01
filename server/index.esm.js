@@ -1,4 +1,4 @@
-// server/index.esm.js — v53 (ESM)
+// server/index.esm.js — v54 (ESM)
 import express from 'express';
 import http from 'http';
 import { Server as SocketIO } from 'socket.io';
@@ -47,6 +47,16 @@ app.post('/api/overlay', (req,res)=>{ Object.assign(state.overlay, req.body||{})
 io.on('connection', (socket)=>{
   socket.emit('init', { overlay: state.overlay, devices: state.devices, intiface: state.intiface });
   socket.on('overlay:set', (ov)=>{ Object.assign(state.overlay, ov||{}); io.emit('overlay:update', state.overlay); });
+  socket.on('element:add', el => { state.overlay.elements.push(el); io.emit('overlay:elements', state.overlay.elements); });
+  socket.on('element:update', el => {
+    const i = state.overlay.elements.findIndex(e => e.id === el.id);
+    if(i !== -1){ state.overlay.elements[i] = el; io.emit('overlay:elements', state.overlay.elements); }
+  });
+  socket.on('elements:get', () => socket.emit('overlay:elements', state.overlay.elements));
+  socket.on('element:delete', id => {
+    const i = state.overlay.elements.findIndex(e => e.id === id);
+    if(i !== -1){ state.overlay.elements.splice(i,1); io.emit('overlay:elements', state.overlay.elements); }
+  });
 });
 
 // Default → control
