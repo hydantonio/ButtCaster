@@ -43,6 +43,10 @@ io.on('connection', (socket)=>{
     const i = state.overlay.elements.findIndex(e => e.id === id);
     if(i !== -1){ state.overlay.elements.splice(i,1); io.emit('overlay:elements', state.overlay.elements); }
   });
+  socket.on('intiface:connect', async url => {
+    await connectIntiface(url ?? state.intiface.url, state, io);
+    socket.emit('intiface:devices', state.devices);
+    io.emit('intiface:status', state.intiface);
   socket.on('tip', async ({amount = 100}) => {
     await handleTip(amount);
   });
