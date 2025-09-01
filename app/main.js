@@ -16,11 +16,14 @@ function startServer(){
   }
   server = fork(serverPath, {
     cwd: path.dirname(serverPath),
-    stdio:'ignore',
+    stdio:'inherit',
     windowsHide:true,
     env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }
   });
-  server.on('exit', ()=> server=null);
+  server.on('exit', code=>{
+    if(code) console.error(`[ButtCaster] server exited with code ${code}`);
+    server=null;
+  });
   server.on('error', err=>{ console.error('[ButtCaster] failed to start server', err); server=null; });
 }
 
@@ -40,7 +43,9 @@ function createWindow(){
   win.loadFile(path.join(__dirname,'../web/splash.html'));
   waitForServer('http://localhost:3000/', (ok)=>{
     if(ok) win.loadURL('http://localhost:3000/control.html');
-    else win.webContents.executeJavaScript("document.querySelector('.tip').textContent='Server failed to start';");
+    else win.webContents
+      .executeJavaScript("document.querySelector('.tip').textContent='Server failed to start';")
+      .catch(err => console.error('[ButtCaster] failed to update splash screen', err));
   });
   win.on('closed', ()=>{ if(server) server.kill(); });
 }
