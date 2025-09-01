@@ -207,12 +207,11 @@ document.getElementById('goalR').onclick=()=> socket.emit('overlay:goal-reached'
 document.getElementById('quit').onclick=()=> fetch('/app/quit').catch(()=>{});
 document.getElementById('btnConn').onclick=()=>{
   const url=document.getElementById('ws').value;
-  fetch('/api/intiface/connect',{method:'POST', body:JSON.stringify({url})});
   fetch('/api/intiface/connect', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ url })
-  });
+  }).catch(err => console.error('Intiface connect failed', err));
 };
 // sockets
 socket.on('overlay:settings', s=>{ settings={...settings,...s}; document.getElementById('wmChk').checked=!!settings.showWatermark; document.getElementById('glowChk').checked=!!settings.glow; document.getElementById('goal').value=settings.goalTarget||2000; render(); });

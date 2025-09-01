@@ -20,7 +20,6 @@ const httpServer = http.createServer(app);
 const io = new SocketIO(httpServer, { cors: { origin: '*' } });
 const server = http.createServer(app);
 server.on('request', app);
-
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'../public')));
 app.use(express.static(path.join(__dirname,'../web')));
