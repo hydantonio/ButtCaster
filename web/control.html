@@ -198,7 +198,11 @@ document.getElementById('goalR').onclick=()=> socket.emit('overlay:goal-reached'
 document.getElementById('quit').onclick=()=> fetch('/app/quit').catch(()=>{});
 document.getElementById('btnConn').onclick=()=>{
   const url=document.getElementById('ws').value;
-  fetch('/api/intiface/connect',{method:'POST', body:JSON.stringify({url})});
+  fetch('/api/intiface/connect', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url })
+  });
 };
 // sockets
 socket.on('overlay:settings', s=>{ settings={...settings,...s}; document.getElementById('wmChk').checked=!!settings.showWatermark; document.getElementById('glowChk').checked=!!settings.glow; document.getElementById('goal').value=settings.goalTarget||2000; render(); });
@@ -213,6 +217,9 @@ socket.on('intiface:devices', list=>{
     <button onclick="socket.emit('haptics:device:set',{id:${d.id}, strength:.85, dur:900})">Pulse</button>`;
     UL.appendChild(li);
   });
+});
+socket.on('intiface:status', s => {
+  document.getElementById('st').textContent = s.connected ? 'connected' : 'disconnected';
 });
 // bootstrap
 socket.emit('elements:get');
