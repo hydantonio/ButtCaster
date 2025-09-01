@@ -189,9 +189,11 @@ function openProps(){
 }
 // toolbar and controls
 document.getElementById('openOverlay').onclick=()=> window.open('/overlay.html?v=48','_blank');
-document.getElementById('addText').onclick=()=> socket.emit('element:add',{id:String(Date.now()),type:'text',text:'WELCOME TO THE STREAM',x:360,y:320,size:64,w:800,h:72});
-document.getElementById('addGoal').onclick=()=>{ if(!elements.find(e=>e.type==='goalbar')) socket.emit('element:add',{id:String(Date.now()),type:'goalbar',x:280,y:120,w:960,h:100}); };
-document.getElementById('addImage').onclick=()=> socket.emit('element:add',{id:String(Date.now()),type:'image',x:80,y:380,w:200,h:140});
+socket.on('connect',()=>{
+  document.getElementById('addText').onclick=()=>{ console.log('addText emitted'); socket.emit('element:add',{id:String(Date.now()),type:'text',text:'WELCOME TO THE STREAM',x:360,y:320,size:64,w:800,h:72}); };
+  document.getElementById('addGoal').onclick=()=>{ console.log('addGoal emitted'); if(!elements.find(e=>e.type==='goalbar')) socket.emit('element:add',{id:String(Date.now()),type:'goalbar',x:280,y:120,w:960,h:100}); };
+  document.getElementById('addImage').onclick=()=>{ console.log('addImage emitted'); socket.emit('element:add',{id:String(Date.now()),type:'image',x:80,y:380,w:200,h:140}); };
+});
 document.getElementById('save').onclick=()=>{ socket.emit('settings:update',{ showWatermark:document.getElementById('wmChk').checked, glow:document.getElementById('glowChk').checked }); socket.emit('goal:set', Number(document.getElementById('goal').value)||0 ); };
 document.getElementById('emit').onclick=()=> socket.emit('tip', { amount:100, user:'Tester' });
 document.getElementById('goalR').onclick=()=> socket.emit('overlay:goal-reached', {});
