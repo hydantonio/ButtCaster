@@ -194,7 +194,10 @@ document.getElementById('save').onclick=()=>{ socket.emit('settings:update',{ sh
 document.getElementById('emit').onclick=()=> socket.emit('tip', { amount:100, user:'Tester' });
 document.getElementById('goalR').onclick=()=> socket.emit('overlay:goal-reached', {});
 document.getElementById('quit').onclick=()=> fetch('/app/quit').catch(()=>{});
-document.getElementById('btnConn').onclick=()=> socket.emit('intiface:connect', document.getElementById('ws').value);
+document.getElementById('btnConn').onclick=()=>{
+  const url=document.getElementById('ws').value;
+  fetch('/api/intiface/connect',{method:'POST', body:JSON.stringify({url})});
+};
 // sockets
 socket.on('overlay:settings', s=>{ settings={...settings,...s}; document.getElementById('wmChk').checked=!!settings.showWatermark; document.getElementById('glowChk').checked=!!settings.glow; document.getElementById('goal').value=settings.goalTarget||2000; render(); });
 socket.on('overlay:elements', list=>{ elements=list||[]; render(); });
