@@ -14,6 +14,8 @@ const app = express();
 // modules without colliding with a global `server` identifier.
 const httpServer = http.createServer(app);
 const io = new SocketIO(httpServer, { cors: { origin: '*' } });
+const server = http.createServer(app);
+const io = new SocketIO(server, { cors: { origin: '*' } });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'../public')));
@@ -71,3 +73,4 @@ app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../public/control.htm
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
+server.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
