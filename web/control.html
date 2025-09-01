@@ -1,236 +1,61 @@
-
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ButtCaster — Control</title>
-<link rel="stylesheet" href="/css/brand.css">
-<link rel="stylesheet" href="/css/style.css">
-<script src="/socket.io/socket.io.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/buttplug@3.2.2/dist/web/buttplug.min.js"></script>
-<script src="/js/ui.js" defer></script>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ButtCaster • Control</title>
+  <link rel="stylesheet" href="css/badge.css">
+  <link rel="icon" href="../public/logo-buttcaster.svg">
+  <style>
+    body { margin:0; font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Calibri, sans-serif; background:#f7f8fb; color:#0a0d14;}
+    header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; background:#fff; border-bottom:1px solid #e6e9f2; position:sticky; top:0; z-index:5;}
+    .brand { display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.2px;}
+    .brand img { width:28px; height:28px; }
+    main { padding:16px; max-width:1000px; margin:0 auto; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .card { background:#fff; border:1px solid #e6e9f2; border-radius:12px; padding:14px; box-shadow: 0 6px 18px rgba(60,80,130,.12); }
+    button { cursor:pointer; border:1px solid #e6e9f2; border-radius:12px; padding:10px 12px; background:#fff; font-weight:800; }
+    input[type="text"] { padding:10px 12px; border:1px solid #e6e9f2; border-radius:12px; min-width:260px; font-weight:600; }
+  </style>
 </head>
 <body>
-<div class="app">
-  <div class="sidebar">
-    <div class="logo"><img src="/img/logo.svg" height="28"><div style="font-weight:800">ButtCaster</div></div>
-    <div class="navbtn active" data-section="overlay"><img src="/img/icons/overlay.svg" alt=""><span>Overlay</span></div>
-    <div class="navbtn" data-section="elements"><img src="/img/icons/elements.svg" alt=""><span>Elements</span></div>
-    <div class="navbtn" data-section="mappings"><img src="/img/icons/mappings.svg" alt=""><span>Mappings</span></div>
-    <div class="navbtn" data-section="devices"><img src="/img/icons/devices.svg" alt=""><span>Devices</span></div>
-    <div class="navbtn" data-section="settings"><img src="/img/icons/settings.svg" alt=""><span>Settings</span></div>
-  </div>
-
-  <div class="center">
-    <div class="top">
-      <div class="chip"><span class="ico">🔌</span>Intiface: <span id="st">disconnected</span></div>
-      <div class="chip"><span class="ico">👥</span>Users: <span id="users">0</span></div>
-      <div class="chip"><span class="ico">💰</span>Tippers(10m): <span id="tippers">0</span></div>
-      <button id="openOverlay" style="margin-left:auto"><span class="ico">📺</span>Open Overlay</button>
+  <header>
+    <div class="brand">
+      <img src="../public/logo-buttcaster.svg" alt="ButtCaster logo">
+      <span>ButtCaster Control</span>
     </div>
-     <div class="canvas">
-      <div class="stage-wrap">
-        <div id="stage" class="stage">
-          <div class="grid"></div>
-          <div class="glow" id="stageGlow"></div>
-          <div class="canvas-abs" id="canvas">
-            <div id="sel" class="sel">
-              <div class="h nw"></div><div class="h n"></div><div class="h ne"></div>
-              <div class="h w"></div><div class="h e"></div>
-              <div class="h sw"></div><div class="h s"></div><div class="h se"></div>
-            </div>
-          </div>
-          <img class="watermark" src="/img/watermark.svg" id="wm">
-        </div>
-      </div>
-      <div id="view-overlay" class="view section">
-        <div class="row">
-          <label>Goal target<br><input id="goal" type="number" value="2000" style="width:140px"></label>
-          <label><input type="checkbox" id="wmChk" checked> Watermark</label>
-          <label><input type="checkbox" id="glowChk" checked> Pink/Blue lights</label>
-          <button id="save">Save</button>
-          <button id="openOverlay"><span class="ico">📺</span>Open Overlay</button>
-        </div>
-        <div class="toolbar">
-          <button id="addText"><span class="ico">📝</span>Add Text</button>
-          <button id="addGoal"><span class="ico">🎯</span>Add Tip Goal</button>
-          <button id="addImage"><span class="ico">🖼️</span>Add Image</button>
-          <button id="emit"><span class="ico">💥</span>Emit Tip 100</button>
-        </div>
-      </div>
-
-      <div id="view-elements" class="view section" hidden>
-        <div class="prop">
-          <div style="font-weight:900">Properties</div>
-          <div id="noSel" style="opacity:.65">Select an element to edit.</div>
-          <div id="propPane" style="display:none">
-            <label>Text<input id="p_text"></label>
-            <div class="row">
-              <label style="flex:1">Font<select id="p_font"><option value="Calibri" selected>Calibri</option><option value="Inter">Inter</option><option value="Segoe UI">Segoe UI</option></select></label>
-              <label style="width:100px">Size<input id="p_size" type="number" value="36"></label>
-            </div>
-            <div class="row">
-              <label style="flex:1">Color<input id="p_color" type="color" value="#0a0d14"></label>
-              <label style="flex:1">Width<input id="p_w" type="number"></label>
-              <label style="flex:1">Height<input id="p_h" type="number"></label>
-            </div>
-            <div class="row">
-              <button id="front"><span class="ico">⬆️</span>Front</button><button id="back"><span class="ico">⬇️</span>Back</button>
-              <button id="dup"><span class="ico">📄</span>Duplicate</button><button id="del"><span class="ico">🗑️</span>Delete</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="view-mappings" class="view section" hidden>
-        <div><strong>Mappings (token → intensity/duration)</strong></div>
-        <div id="maps"></div>
-        <button id="addRange"><span class="ico">➕</span>Add Range</button>
-      </div>
-
-      <div id="view-devices" class="view section" hidden>
-        <div class="row">
-          <label>WS URL<br><input id="ws" value="ws://127.0.0.1:12345" style="width:240px"></label>
-          <button id="btnConn">Connect Intiface</button>
-        </div>
-        <div id="devList" class="list" style="margin-top:12px"></div>
-      </div>
-
-      <div id="view-settings" class="view section" hidden>
-        <div class="row">
-          <label>Haptics Preset<br><select id="preset"><option value="gentle">Gentle</option><option value="balanced" selected>Balanced</option><option value="intense">Intense</option></select></label>
-          <button id="goalR"><span class="ico">🏁</span>Goal Reached</button>
-          <button id="quit"><span class="ico">❌</span>Quit</button>
-        </div>
-      </div>
+    <div id="badge">
+      <span id="badge-conn" title="Disconnected"></span>
+      <span id="badge-devices">0 devices</span>
     </div>
-  </div>
+  </header>
 
-  <div class="right">
-    <div class="section">
-      <div style="font-weight:900">Layers</div>
-      <ol id="layers"></ol>
-    </div>
-  </div>
-</div>
+  <main>
+    <section class="card">
+      <div class="row">
+        <input id="wsurl" type="text" value="ws://127.0.0.1:12345" aria-label="Intiface WS URL">
+        <button id="btn-connect">Connect</button>
+        <button id="btn-disconnect">Disconnect</button>
+        <button id="btn-vibe">Vibrate test</button>
+      </div>
+    </section>
+  </main>
 
-<script>
-const socket = io();
-const stage=document.getElementById('stage'), canvas=document.getElementById('canvas'), sel=document.getElementById('sel');
-const wm=document.getElementById('wm'), glow=document.getElementById('stageGlow');
-let settings={showWatermark:true, glow:true, goalTarget:2000, goalValue:0}; let elements=[]; let selected=null;
+  <script type="module">
+    import { connectIntiface, disconnectIntiface, vibrateTest, onDeviceCount } from "./js/intiface.js";
+    import { enableRightSidebarResize } from "./js/layout.js";
+    // No right sidebar here, but keep util available if you add one in this view.
 
-// preview scale 960x540 ↔ 1920x1080
-function scale(){ const s=960/1920; document.querySelector('.canvas-abs').style.transform=`scale(${s})`; }
-let scaleFactor=960/1920;
-function scale(){ const s=Math.min(window.innerWidth/1920, window.innerHeight/1080); scaleFactor=s; document.querySelector('.canvas-abs').style.transform=`scale(${s})`; }
-scale(); addEventListener('resize', scale);
+    onDeviceCount(n => console.log("[Control] Devices:", n));
 
-// Render
-function px(n){ return (n|0)+'px' }
-function render(){
-  canvas.innerHTML=''; document.getElementById('layers').innerHTML='';
-  elements.forEach(el=>{
-    const node=document.createElement('div'); node.className='element'; node.dataset.id=el.id; node.style.left=px(el.x); node.style.top=px(el.y); node.style.width=px(el.w||600); node.style.height=px(el.h||60);
-    if(el.type==='goalbar'){ const track=document.createElement('div'); track.className='goal'; track.style.position='absolute'; track.style.inset='0';
-      const lab=document.createElement('div'); lab.className='label'; lab.textContent = `Remaining: ${Math.max(0,(settings.goalTarget||0)-(settings.goalValue||0))}`;
-      node.appendChild(track); node.appendChild(lab);
-    } else if(el.type==='text'){ node.style.fontWeight='800'; node.style.fontSize=px(el.size||48); node.textContent=el.text||'TEXT'; }
-    else if(el.type==='image'){ node.style.background='#e9edf3'; node.style.borderRadius='12px'; node.innerHTML='<div class="label">Image</div>'; }
-    canvas.appendChild(node);
-    const li=document.createElement('li'); li.textContent=`${el.type} — ${el.id}`; li.onclick=()=>select(el.id); document.getElementById('layers').appendChild(li);
-  });
-  canvas.appendChild(sel);
-  wm.style.display = settings.showWatermark?'block':'none'; glow.style.display = settings.glow?'block':'none';
-  if(selected){ showSel(); } else sel.style.display='none';
-  wire();
-}
-function select(id){ selected=id; openProps(); showSel(); }
-function showSel(){
-  const el=elements.find(e=>e.id===selected); if(!el) return;
-  sel.style.display='block'; sel.style.left=px(el.x); sel.style.top=px(el.y); sel.style.width=px(el.w||600); sel.style.height=px(el.h||60);
-  sel.querySelectorAll('.h').forEach(h=>attachResize(h, el, Array.from(h.classList).pop()));
-}
-function attachResize(h, el, k){
-  h.onpointerdown=(e)=>{ h.setPointerCapture(e.pointerId);
-    const start={x:e.clientX,y:e.clientY, ex:el.x, ey:el.y, ew:el.w||600, eh:el.h||60};
-    function mv(ev){
-      const dx=(ev.clientX-start.x)/0.5, dy=(ev.clientY-start.y)/0.5;
-      let x=el.x, y=el.y, w=el.w||600, h=el.h||60;
-      if(k.includes('e')) w=Math.max(20, Math.round(start.ew+dx));
-      if(k.includes('s')) h=Math.max(20, Math.round(start.eh+dy));
-      if(k.includes('w')){ x=Math.round(start.ex+dx); w=Math.max(20, Math.round(start.ew-dx)); }
-      if(k.includes('n')){ y=Math.round(start.ey+dy); h=Math.max(20, Math.round(start.eh-dy)); }
-      Object.assign(el,{x,y,w,h}); socket.emit('element:update', el);
-    }
-    function up(){ h.releasePointerCapture(e.pointerId); window.removeEventListener('pointermove',mv); window.removeEventListener('pointerup',up); render(); }
-    window.addEventListener('pointermove',mv); window.addEventListener('pointerup',up,{once:true});
-  };
-}
-function wire(){
-  canvas.querySelectorAll('.element').forEach(node=>{
-    node.onclick=()=>select(node.dataset.id);
-    const el=elements.find(e=>e.id===node.dataset.id);
-    node.onpointerdown=(e)=>{ if(e.button!==0) return; node.setPointerCapture(e.pointerId);
-      const s=0.5; const start={x:e.clientX,y:e.clientY, ex:el.x, ey:el.y};
-      node.onpointermove=(ev)=>{ const dx=(ev.clientX-start.x)/s, dy=(ev.clientY-start.y)/s; el.x=Math.round(start.ex+dx); el.y=Math.round(start.ey+dy); socket.emit('element:update',el); showSel(); };
-      node.onpointermove=(ev)=>{ const dx=(ev.clientX-start.x)/scaleFactor, dy=(ev.clientY-start.y)/scaleFactor; el.x=Math.round(start.ex+dx); el.y=Math.round(start.ey+dy); socket.emit('element:update',el); showSel(); };
-      node.onpointerup=()=>{ node.onpointermove=null; };
-    };
-  });
-}
-function openProps(){
-  const el=elements.find(e=>e.id===selected); if(!el){ document.getElementById('noSel').style.display='block'; document.getElementById('propPane').style.display='none'; return; }
-  document.getElementById('noSel').style.display='none'; document.getElementById('propPane').style.display='block';
-  const P=id=>document.getElementById(id);
-  P('p_text').parentElement.style.display=(el.type==='text')?'block':'none';
-  if(el.type==='text'){ P('p_text').value=el.text||''; }
-  P('p_font').value=el.font||'Calibri'; P('p_size').value=el.size||36; P('p_color').value=el.color||'#0a0d14'; P('p_w').value=el.w||600; P('p_h').value=el.h||60;
-  P('p_text').oninput=e=>{ el.text=e.target.value; socket.emit('element:update',el); render(); };
-  P('p_font').onchange=e=>{ el.font=e.target.value; socket.emit('element:update',el); render(); };
-  P('p_size').oninput=e=>{ el.size=Number(e.target.value)||36; socket.emit('element:update',el); render(); };
-  P('p_color').onchange=e=>{ el.color=e.target.value; socket.emit('element:update',el); render(); };
-  P('p_w').oninput=e=>{ el.w=Number(e.target.value)||el.w; socket.emit('element:update',el); render(); };
-  P('p_h').oninput=e=>{ el.h=Number(e.target.value)||el.h; socket.emit('element:update',el); render(); };
-}
-// toolbar and controls
-document.getElementById('openOverlay').onclick=()=> window.open('/overlay.html?v=48','_blank');
-document.getElementById('addText').onclick=()=> socket.emit('element:add',{id:String(Date.now()),type:'text',text:'WELCOME TO THE STREAM',x:360,y:320,size:64,w:800,h:72});
-document.getElementById('addGoal').onclick=()=>{ if(!elements.find(e=>e.type==='goalbar')) socket.emit('element:add',{id:String(Date.now()),type:'goalbar',x:280,y:120,w:960,h:100}); };
-document.getElementById('addImage').onclick=()=> socket.emit('element:add',{id:String(Date.now()),type:'image',x:80,y:380,w:200,h:140});
-socket.on('connect',()=>{
-  document.getElementById('addText').onclick=()=>{ console.log('addText emitted'); socket.emit('element:add',{id:String(Date.now()),type:'text',text:'WELCOME TO THE STREAM',x:360,y:320,size:64,w:800,h:72}); };
-  document.getElementById('addGoal').onclick=()=>{ console.log('addGoal emitted'); if(!elements.find(e=>e.type==='goalbar')) socket.emit('element:add',{id:String(Date.now()),type:'goalbar',x:280,y:120,w:960,h:100}); };
-  document.getElementById('addImage').onclick=()=>{ console.log('addImage emitted'); socket.emit('element:add',{id:String(Date.now()),type:'image',x:80,y:380,w:200,h:140}); };
-});
-document.getElementById('save').onclick=()=>{ socket.emit('settings:update',{ showWatermark:document.getElementById('wmChk').checked, glow:document.getElementById('glowChk').checked }); socket.emit('goal:set', Number(document.getElementById('goal').value)||0 ); };
-document.getElementById('emit').onclick=()=> socket.emit('tip', { amount:100, user:'Tester' });
-document.getElementById('goalR').onclick=()=> socket.emit('overlay:goal-reached', {});
-document.getElementById('quit').onclick=()=> fetch('/app/quit').catch(()=>{});
-document.getElementById('btnConn').onclick=()=>{
-  const url=document.getElementById('ws').value;
-  fetch('/api/intiface/connect', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url })
-  }).catch(err => console.error('Intiface connect failed', err));
-};
-// sockets
-socket.on('overlay:settings', s=>{ settings={...settings,...s}; document.getElementById('wmChk').checked=!!settings.showWatermark; document.getElementById('glowChk').checked=!!settings.glow; document.getElementById('goal').value=settings.goalTarget||2000; render(); });
-socket.on('overlay:elements', list=>{ elements=list||[]; render(); });
-socket.on('overlay:goal', g=>{ settings.goalValue=g.current; settings.goalTarget=g.target; render(); });
-socket.on('intiface:devices', list=>{
-  const UL = document.getElementById('devList'); UL.innerHTML='';
-  (list||[]).forEach(d=>{
-    const li=document.createElement('div'); li.className='row'; li.style.alignItems='center';
-    li.innerHTML = `<div style="font-weight:800">${d.name}</div><div style="opacity:.6">#${d.id}</div><div style="margin-left:auto">${d.canVibrate?'🟣':''}${d.canRotate?'🔄':''}${d.canLinear?'↕️':''}</div>
-    <input type="range" min="0" max="100" value="40" oninput="socket.emit('haptics:device:set',{id:${d.id}, strength:this.value/100, dur:800})">
-    <button onclick="socket.emit('haptics:device:set',{id:${d.id}, strength:.85, dur:900})">Pulse</button>`;
-    UL.appendChild(li);
-  });
-});
-socket.on('intiface:status', s => {
-  document.getElementById('st').textContent = s.connected ? 'connected' : 'disconnected';
-});
-// bootstrap
-socket.emit('elements:get');
-</script>
-</body></html>
+    const wsurl = document.getElementById("wsurl");
+    const btnConnect = document.getElementById("btn-connect");
+    const btnDisconnect = document.getElementById("btn-disconnect");
+    const btnVibe = document.getElementById("btn-vibe");
+
+    btnConnect.addEventListener("click", () => connectIntiface(wsurl.value).catch(console.error));
+    btnDisconnect.addEventListener("click", () => disconnectIntiface().catch(console.error));
+    btnVibe.addEventListener("click", () => vibrateTest(0.6, 1200).catch(console.error));
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+
+#badge { display:flex; align-items:center; gap:8px; font-weight:800;}
+#badge-devices { padding:6px 10px; border-radius:12px; background:#fff; border:1px solid #e6e9f2; box-shadow: 0 6px 18px rgba(60,80,130,.12);}
+#badge-conn { width:10px; height:10px; border-radius:50%; display:inline-block; }

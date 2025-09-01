@@ -11,7 +11,7 @@
   "dependencies": {
     "express": "^4.19.2",
     "socket.io": "^4.7.5",
-    "buttplug": "^3.2.2"
+    "buttplug": "^3.0.0",
   },
   "devDependencies": {
     "electron": "^30.0.8"
