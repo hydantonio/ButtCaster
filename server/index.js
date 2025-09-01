@@ -16,7 +16,9 @@ const app = express();
 // integration where Socket.IO intercepts its own requests without
 // triggering Express.
 const server = http.createServer(app);
+const server = http.createServer();
 const io = new SocketIO(server, { cors: { origin: '*' } });
+server.on('request', app);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'../public')));
@@ -63,6 +65,7 @@ io.on('connection', (socket)=>{
 });
 
 app.get('/', (req,res)=> res.sendFile(path.join(__dirname,'../web/control.html')));
+server.on('request', app);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
