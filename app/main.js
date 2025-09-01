@@ -3,11 +3,10 @@ const { app, BrowserWindow, screen } = require('electron');
 const path = require('path');
 const { fork } = require('child_process');
 
-const http = require('http');
+const nodeHttp = require('http');
 const fs = require('fs');
 
 const { spawn } = require('child_process');
-const http = require('http');
 
 let server = null, win = null;
 
@@ -44,13 +43,13 @@ function waitForServer(url, cb){
   const start = Date.now();
   (function check(){
 
-    http.get(url, ()=> cb(true)).on('error', ()=>{
+    nodeHttp.get(url, ()=> cb(true)).on('error', ()=>{
       if(Date.now() - start > 10000) return cb(false);
 
-    http.get(url, ()=> cb(true)).on('error', ()=>{
+    nodeHttp.get(url, ()=> cb(true)).on('error', ()=>{
       if(Date.now() - start > 10000) return cb(false);
 
-    http.get(url, ()=> cb()).on('error', ()=>{
+    nodeHttp.get(url, ()=> cb()).on('error', ()=>{
       if(Date.now() - start > 10000) return cb();
       setTimeout(check, 200);
     });
