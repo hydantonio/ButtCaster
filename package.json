@@ -1,6 +1,7 @@
 {
   "name": "buttcaster-v48",
   "version": "48.0.0",
+  "type": "commonjs",
   "private": true,
   "main": "app/main.js",
   "scripts": {

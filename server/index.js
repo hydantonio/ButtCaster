@@ -25,6 +25,7 @@ app.post('/api/overlay', (req,res)=>{ Object.assign(state.overlay, req.body||{})
 
 io.on('connection', (socket)=>{
   socket.emit('init', { overlay: state.overlay, devices: state.devices, intiface: state.intiface });
+  socket.emit('overlay:elements', state.overlay.elements);
   socket.on('overlay:set', (ov)=>{ Object.assign(state.overlay, ov||{}); io.emit('overlay:update', state.overlay); });
   socket.on('element:add', el => { state.overlay.elements.push(el); io.emit('overlay:elements', state.overlay.elements); });
   socket.on('element:update', el => {
