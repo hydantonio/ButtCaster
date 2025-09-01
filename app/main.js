@@ -1,5 +1,5 @@
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, screen } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 let server = null, win = null;
@@ -10,7 +10,8 @@ function startServer(){
   server.on('exit', ()=> server=null);
 }
 function createWindow(){
-  win = new BrowserWindow({ width: 1280, height: 820, backgroundColor: '#00000000', autoHideMenuBar: true });
+  const { width, height, x, y } = screen.getPrimaryDisplay().workArea;
+  win = new BrowserWindow({ x, y, width, height, backgroundColor: '#00000000', autoHideMenuBar: true });
   win.loadURL('http://localhost:3000/splash.html').catch(()=>{});
   setTimeout(()=> win.loadURL('http://localhost:3000/control.html'), 1500);
   win.on('closed', ()=>{ if(server) server.kill(); });
