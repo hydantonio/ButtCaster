@@ -38,7 +38,7 @@ export function emitDevices(client, state, io){
     name: d.Name ?? d.name,
     canVibrate: !!(d.AllowedMessages?.VibrateCmd),
   }));
-  io.emit('devices:update', state.devices);
+  io.emit('intiface:devices', state.devices);
 }
 
 export async function vibrateAll(state, strength=.65, durationMs=1200){

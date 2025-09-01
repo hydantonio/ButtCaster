@@ -31,7 +31,7 @@ async function scanOnce(client, state, io){
 function emitDevices(client, state, io){
   const list = client?.Devices || client?.devices || [];
   state.devices = list.map(d=>({ index: d.Index ?? d.index, name: d.Name ?? d.name, canVibrate: !!(d.AllowedMessages?.VibrateCmd) }));
-  io.emit('devices:update', state.devices);
+  io.emit('intiface:devices', state.devices);
 }
 
 async function vibrateAll(state, strength=.65, durationMs=1200){
