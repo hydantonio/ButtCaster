@@ -23,7 +23,15 @@ app.get('/api/devices', (req,res)=> res.json({ ok:true, devices: state.devices, 
 app.post('/api/emit-tip', async (req,res)=>{ const amt = Number((req.body&&req.body.amount)||50); state.overlay.goalProgress = Math.min(state.overlay.goalTarget, state.overlay.goalProgress + amt); io.emit('overlay:goal',{ target: state.overlay.goalTarget, current: state.overlay.goalProgress }); await vibrateAll(state, Math.min(1, Math.max(.25, amt/250)), 1200); res.json({ ok:true }); });
 app.post('/api/overlay', (req,res)=>{ Object.assign(state.overlay, req.body||{}); io.emit('overlay:update', state.overlay); res.json({ok:true}); });
 
-io.on('connection', (socket)=>{ socket.emit('init', { overlay: state.overlay, devices: state.devices, intiface: state.intiface }); socket.on('overlay:set', (ov)=>{ Object.assign(state.overlay, ov||{}); io.emit('overlay:update', state.overlay); }); });
+io.on('connection', (socket)=>{
+  socket.emit('init', { overlay: state.overlay, devices: state.devices, intiface: state.intiface });
+  socket.on('overlay:set', (ov)=>{ Object.assign(state.overlay, ov||{}); io.emit('overlay:update', state.overlay); });
+  socket.on('intiface:connect', async url => {
+    await connectIntiface(url ?? state.intiface.url, state, io);
+    socket.emit('intiface:devices', state.devices);
+    io.emit('intiface:status', state.intiface);
+  });
+});
 
 app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../public/control.html')));
 

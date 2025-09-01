@@ -45,7 +45,7 @@ makeDraggable(document.getElementById('title'));
 makeDraggable(document.getElementById('goalbar'));
 
 // Devices list
-ioSock.on('devices:update', list=>{
+ioSock.on('intiface:devices', list=>{
   const box = document.getElementById('devList'); if(!box) return; box.innerHTML='';
   (list||[]).forEach(d=>{
     const row = document.createElement('div'); row.className='dev-row';
