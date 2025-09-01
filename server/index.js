@@ -18,6 +18,10 @@ const app = express();
 // Use a uniquely named variable to avoid accidental re‑declarations.
 const httpServer = http.createServer(app);
 const io = new SocketIO(httpServer, { cors: { origin: '*' } });
+const server = http.createServer(app);
+const server = http.createServer();
+const io = new SocketIO(server, { cors: { origin: '*' } });
+server.on('request', app);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'../public')));
@@ -67,3 +71,10 @@ app.get('/', (req,res)=> res.sendFile(path.join(__dirname,'../web/control.html')
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
+
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
+server.on('request', app);
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
