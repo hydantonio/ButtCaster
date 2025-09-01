@@ -15,6 +15,9 @@ const app = express();
 // Using `http.createServer(app)` restores the typical Express + Socket.IO
 // integration where Socket.IO intercepts its own requests without
 // triggering Express.
+// Use a uniquely named variable to avoid accidental re‑declarations.
+const httpServer = http.createServer(app);
+const io = new SocketIO(httpServer, { cors: { origin: '*' } });
 const server = http.createServer(app);
 const server = http.createServer();
 const io = new SocketIO(server, { cors: { origin: '*' } });
@@ -65,6 +68,9 @@ io.on('connection', (socket)=>{
 });
 
 app.get('/', (req,res)=> res.sendFile(path.join(__dirname,'../web/control.html')));
+
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
 server.on('request', app);
 
 const PORT = process.env.PORT || 3000;
