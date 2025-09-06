@@ -41,11 +41,15 @@ function createWindow(){
   const { width, height, x, y } = screen.getPrimaryDisplay().workArea;
   win = new BrowserWindow({ x, y, width, height, backgroundColor: '#00000000', autoHideMenuBar: true });
   win.loadFile(path.join(__dirname,'../web/splash.html'));
+  const readyAt = Date.now() + 5000;
   waitForServer('http://localhost:3000/', (ok)=>{
-    if(ok) win.loadURL('http://localhost:3000/control.html');
-    else win.webContents
-      .executeJavaScript("document.querySelector('.tip').textContent='Server failed to start';")
-      .catch(err => console.error('[ButtCaster] failed to update splash screen', err));
+    const delay = Math.max(0, readyAt - Date.now());
+    setTimeout(()=>{
+      if(ok) win.loadURL('http://localhost:3000/control.html');
+      else win.webContents
+        .executeJavaScript("document.querySelector('.tip').textContent='Server failed to start';")
+        .catch(err => console.error('[ButtCaster] failed to update splash screen', err));
+    }, delay);
   });
   win.on('closed', ()=>{ if(server) server.kill(); });
 }

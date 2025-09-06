@@ -4,6 +4,7 @@ const http = require('http');
 const { Server: SocketIO } = require('socket.io');
 const path = require('path');
 const { connectIntiface, vibrateAll } = require('./intiface.js');
+const { connectChaturbate } = require('./chaturbate.js');
 
 const app = express();
 // Attach Express as the HTTP request handler so Socket.IO's internal
@@ -26,10 +27,43 @@ app.use(express.static(path.join(__dirname,'../web')));
 
 const state = { overlay:{ goalTarget:2000, goalProgress:0, glow:true, watermark:true, elements:[] }, devices:[], intiface:{ url:'ws://127.0.0.1:12345', connected:false }, bpClient:null };
 
+// Mapping from token ranges to vibration patterns.
+// Example entries: {from:1,to:10,duration:1000,pattern:'ramp'}
+const tokenMap = [
+  { from: 1, to: 10, duration: 1000, pattern: 'ramp' },
+  { from: 11, to: 50, duration: 3000, pattern: 'random' },
+  { from: 51, to: 500, duration: 5000, pattern: 'spikes' }
+];
+
+function findMapping(amount){
+  return tokenMap.find(m => amount >= m.from && amount <= m.to);
+}
+
+async function runPattern(state, pattern, duration){
+  switch(pattern){
+    case 'ramp':
+      for(let i=0;i<5;i++){ await vibrateAll(state, i/5, duration/5); }
+      break;
+    case 'random':
+      for(let i=0;i<5;i++){ await vibrateAll(state, Math.random(), duration/5); }
+      break;
+    case 'spikes':
+      for(let i=0;i<5;i++){ await vibrateAll(state, i%2?1:0.2, duration/10); }
+      break;
+    default:
+      await vibrateAll(state, 0.6, duration);
+  }
+}
+
 async function handleTip(amount = 100){
   state.overlay.goalProgress = Math.min(state.overlay.goalTarget, state.overlay.goalProgress + amount);
   io.emit('overlay:goal', { target: state.overlay.goalTarget, current: state.overlay.goalProgress });
-  await vibrateAll(state, Math.min(1, Math.max(.25, amount / 250)), 1200);
+  const map = findMapping(amount);
+  if(map){
+    await runPattern(state, map.pattern, map.duration);
+  } else {
+    await vibrateAll(state, Math.min(1, Math.max(.25, amount / 250)), 1200);
+  }
 }
 
 app.post('/api/intiface/connect', async (req,res)=>{
@@ -67,5 +101,18 @@ io.on('connection', (socket)=>{
 app.get('/', (req,res)=> res.sendFile(path.join(__dirname,'../web/control.html')));
 
 const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, ()=> console.log(`[ButtCaster] server on http://localhost:${PORT}`));
+httpServer.listen(PORT, async () => {
+  console.log(`[ButtCaster] server on http://localhost:${PORT}`);
+  try {
+    await connectIntiface(state.intiface.url, state, io);
+    io.emit('intiface:status', state.intiface);
+  } catch (err) {
+    console.error('[ButtCaster] Intiface connection failed', err);
+  }
+});
 server.on('request', app);
+
+// Connect to Chaturbate if room provided via env CHATURBATE_ROOM
+if(process.env.CHATURBATE_ROOM){
+  connectChaturbate(process.env.CHATURBATE_ROOM, amt => handleTip(amt));
+}
